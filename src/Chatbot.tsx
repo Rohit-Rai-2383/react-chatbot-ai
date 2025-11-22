@@ -1,19 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { role, responseType } from "../utils/constants";
-import { TMessage } from "../utils/types";
+import type { TMessage } from "../utils/types";
 import ChatInput from "./components/ChatInput";
 import ChatMessages from "./components/ChatMessages";
+import { config } from "./config";
 
-export function Chatbot({
-  token,
-  socketUrl,
-}: {
-  token: string;
-  socketUrl: string;
-}) {
+export function Chatbot({ token }: { token: string }) {
   const TOKEN = token || "";
-  const SOCKET_URL = socketUrl || "";
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<TMessage[]>([
@@ -26,7 +20,9 @@ export function Chatbot({
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const hasSentAuth = useRef(false);
-  const processingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const processingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -37,7 +33,7 @@ export function Chatbot({
   const openSocket = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) return;
 
-    const ws = new WebSocket(SOCKET_URL);
+    const ws = new WebSocket(config.socketUrl);
     wsRef.current = ws;
 
     ws.onopen = () => {
