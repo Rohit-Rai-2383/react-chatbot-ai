@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useRef, useState } from "react";
 import { role, responseType } from "../utils/constants";
 import type { TMessage } from "../utils/types";
@@ -8,6 +7,7 @@ import { config } from "./config";
 
 export function Chatbot({ token }: { token: string }) {
   const TOKEN = token || "";
+  console.log({ token });
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<TMessage[]>([

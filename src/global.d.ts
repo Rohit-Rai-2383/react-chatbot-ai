@@ -3,7 +3,8 @@ export {};
 declare global {
   interface Window {
     Chatbot: {
-      init: (config: { token: string; socketUrl: string }) => void;
+      init: (cfg: { token?: string; containerId?: string }) => void;
+      destroy?: () => void;
     };
   }
 }

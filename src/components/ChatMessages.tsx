@@ -1,10 +1,9 @@
-"use client";
-
 import MarkdownMessage from "./MarkdownMessage";
 import BotProcessing from "./BotProcessing";
-import { role } from "../utils/constants";
+import { role } from "../../utils/constants";
+import type { TMessage } from "../../utils/types";
 
-export default function ChatMessages({ messages }) {
+export default function ChatMessages({ messages }: { messages: TMessage[] }) {
   return (
     <>
       {messages.map((m, i) => {

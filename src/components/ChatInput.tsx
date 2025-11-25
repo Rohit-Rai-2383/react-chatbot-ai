@@ -1,9 +1,8 @@
-"use client";
-
 import { useState } from "react";
 import { ArrowUp } from "lucide-react";
+import type { TChatbotInputProps } from "../../utils/types";
 
-export default function ChatInput({ onSend }) {
+export default function ChatInput({ onSend }: TChatbotInputProps) {
   const [value, setValue] = useState("");
 
   const send = () => {
