@@ -2,12 +2,13 @@ import { createRoot } from "react-dom/client";
 import type { Root } from "react-dom/client";
 import { Chatbot } from "./Chatbot";
 import "./index.css";
+import type { TInitProps } from "../utils/types";
 
 (function () {
   let root: Root | null = null;
 
-  function init(cfg: { token?: string; containerId?: string } = {}) {
-    const { token, containerId } = cfg;
+  function init(cfg: TInitProps = {}) {
+    const { token, containerId, userId } = cfg;
 
     let container: HTMLElement | null = null;
 
@@ -28,7 +29,7 @@ import "./index.css";
       root = createRoot(container);
     }
 
-    root.render(<Chatbot token={token || ""} />);
+    root.render(<Chatbot token={token || ""} userId={userId || ""} />);
   }
 
   function destroy() {
