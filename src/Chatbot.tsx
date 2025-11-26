@@ -191,7 +191,7 @@ export function Chatbot({ token, userId }: TChatBotProps) {
     }, 9000);
   };
 
-  if (!config.allowedUsers.includes(userId)) return null;
+  if (!token || !config.allowedUsers.includes(userId)) return null;
 
   return (
     <>
