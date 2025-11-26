@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { role, responseType } from "../utils/constants";
-import type { TMessage } from "../utils/types";
+import type { TChatBotProps, TMessage, TParsedRole } from "../utils/types";
 import ChatInput from "./components/ChatInput";
 import ChatMessages from "./components/ChatMessages";
 import { config } from "./config";
 
-export function Chatbot({ token }: { token: string }) {
+export function Chatbot({ token, userId }: TChatBotProps) {
   const TOKEN = token || "";
-  console.log({ token });
+  console.log({ token, userId });
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<TMessage[]>([
@@ -49,7 +49,7 @@ export function Chatbot({ token }: { token: string }) {
     ws.onmessage = (event) => {
       setLoading(false);
 
-      let parsed: any = null;
+      let parsed: TParsedRole | null = null;
       try {
         parsed = JSON.parse(event.data);
       } catch {
@@ -60,7 +60,7 @@ export function Chatbot({ token }: { token: string }) {
         return;
       }
 
-      if (parsed.type === responseType.PROCESSING) {
+      if (parsed?.type === responseType.PROCESSING) {
         if (processingTimeoutRef.current)
           clearTimeout(processingTimeoutRef.current);
 
@@ -77,7 +77,7 @@ export function Chatbot({ token }: { token: string }) {
         return;
       }
 
-      if (parsed.type === responseType.RESPONSE) {
+      if (parsed?.type === responseType.RESPONSE) {
         if (processingTimeoutRef.current) {
           clearTimeout(processingTimeoutRef.current);
         }
@@ -90,7 +90,7 @@ export function Chatbot({ token }: { token: string }) {
         return;
       }
 
-      if (parsed.type === responseType.ERROR) {
+      if (parsed?.type === responseType.ERROR) {
         setMessages((m) => [
           ...m,
           { role: role.ERROR_ROLE, content: parsed.message },
@@ -190,6 +190,8 @@ export function Chatbot({ token }: { token: string }) {
       });
     }, 9000);
   };
+
+  if (!config.allowedUsers.includes(userId)) return null;
 
   return (
     <>
