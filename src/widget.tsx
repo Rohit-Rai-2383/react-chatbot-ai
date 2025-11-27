@@ -10,6 +10,11 @@ import type { TInitProps } from "../utils/types";
   function init(cfg: TInitProps = {}) {
     const { token, containerId, userId } = cfg;
 
+    if (!token || !userId) {
+      console.warn("Chatbot: Skipped init because token or userId missing.");
+      return;
+    }
+
     let container: HTMLElement | null = null;
 
     if (containerId) {
