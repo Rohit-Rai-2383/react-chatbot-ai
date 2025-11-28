@@ -1,3 +1,83 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --cb-primary: #1e40af;
+  --cb-secondary: #f8fafc;
+  --cb-text: #000;
+  --cb-user-bg: #1e40af;
+  --cb-user-text: #fff;
+  --cb-bot-bg: #fff;
+  --cb-bot-text: #222;
+  --cb-radius: 12px;
+  --cb-font: Inter, sans-serif;
+}
+
+
+@layer utilities {
+  /* FONT */
+  .cb-font {
+    font-family: var(--cb-font);
+  }
+
+  /* RADIUS */
+  .cb-radius {
+    border-radius: var(--cb-radius);
+  }
+
+  /* USER BUBBLE */
+  .cb-user-bubble {
+    background-color: var(--cb-user-bg);
+    color: var(--cb-user-text);
+    border-radius: var(--cb-radius);
+  }
+
+  /* BOT BUBBLE */
+  .cb-bot-bubble {
+    background-color: var(--cb-bot-bg);
+    color: var(--cb-bot-text);
+    border-radius: var(--cb-radius);
+  }
+
+  /* BUTTON */
+  .cb-button {
+    background-color: var(--cb-primary);
+    color: var(--cb-user-text);
+    border-radius: var(--cb-radius);
+  }
+
+  /* CONTAINER */
+  .cb-container {
+    background-color: var(--cb-secondary);
+    color: var(--cb-text);
+    font-family: var(--cb-font);
+  }
+
+  /* avatar using primary bg (bot) */
+.cb-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* header (primary background) */
+.cb-header {
+  background-color: var(--cb-primary);
+  color: var(--cb-user-text);
+}
+
+/* link color that follows primary */
+.text-cb-link {
+  color: var(--cb-primary);
+}
+
+/* subtle bubble border using variable (optional) */
+.cb-bubble-border {
+  border-color: rgba(0,0,0,0.06);
+}
+
+/* small utilities */
+.bg-cb-secondary { background-color: var(--cb-secondary); }
+.text-cb { color: var(--cb-text); }
+}

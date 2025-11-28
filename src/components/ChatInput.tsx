@@ -29,7 +29,7 @@ export default function ChatInput({ onSend }: TChatbotInputProps) {
           className={`w-8 h-8 flex items-center justify-center rounded-full transition 
             ${
               value.trim()
-                ? "bg-blue-600 text-white hover:bg-blue-700"
+                ? "cb-user-bubble hover:cb-user-bubble"
                 : "bg-gray-300 cursor-not-allowed text-gray-500"
             }
           `}

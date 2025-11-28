@@ -43,7 +43,7 @@ export default function MarkdownMessage({ text }: { text: string }) {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 underline font-medium"
+              className="text-cb-link underline font-medium"
             >
               {children}
             </a>
