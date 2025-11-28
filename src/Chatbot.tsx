@@ -5,9 +5,8 @@ import ChatInput from "./components/ChatInput";
 import ChatMessages from "./components/ChatMessages";
 import { config } from "./config";
 
-export function Chatbot({ token, userId }: TChatBotProps) {
+export function Chatbot({ token, userId, theme }: TChatBotProps) {
   const TOKEN = token || "";
-  console.log({ token, userId });
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<TMessage[]>([
@@ -200,13 +199,13 @@ export function Chatbot({ token, userId }: TChatBotProps) {
           setOpen((prev) => !prev);
           if (!open) openSocket();
         }}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xl z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 cb-button cb-radius text-cb-user flex items-center justify-center shadow-xl z-50"
       >
         💬
       </button>
       {open && (
-        <div className="fixed bottom-28 right-6 w-[380px] h-[420px] bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col z-50 overflow-hidden">
-          <div className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center sticky top-0 z-10">
+        <div className="fixed bottom-28 right-6 w-[380px] h-[420px] cb-container rounded-2xl shadow-xl border cb-bubble-border flex flex-col z-50 overflow-hidden">
+          <div className="cb-header px-4 py-3 flex justify-between items-center sticky top-0 z-10">
             <span className="font-semibold">FK Bot</span>
             <button onClick={() => setOpen(false)}>✕</button>
           </div>
