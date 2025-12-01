@@ -16,7 +16,7 @@ export default function ChatInput({ onSend }: TChatbotInputProps) {
     <div className="w-full bg-white border-t border-gray-200 px-4 py-3 space-y-3">
       <div className="flex items-center bg-gray-100 rounded-lg px-4 py-3 shadow-sm">
         <textarea
-          rows={3}
+          rows={1}
           className="flex-1 bg-transparent outline-none text-sm resize-none overflow-hidden"
           placeholder="Type a message..."
           value={value}

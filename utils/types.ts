@@ -25,6 +25,7 @@ export type TTheme = {
   botTextColor?: string;
   borderRadius?: string;
   fontFamily?: string;
+  initialMessage?: string;
 };
 
 export type TInitProps = {

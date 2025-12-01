@@ -5,14 +5,16 @@ import ChatInput from "./components/ChatInput";
 import ChatMessages from "./components/ChatMessages";
 import { config } from "./config";
 
-export function Chatbot({ token, userId }: TChatBotProps) {
+export function Chatbot({ token, userId, theme }: TChatBotProps) {
   const TOKEN = token || "";
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<TMessage[]>([
     {
       role: role.BOT_ROLE,
-      content: "Hello! I am your helping hand. How can I assist you today?",
+      content:
+        theme?.initialMessage ||
+        "Hello! I am your helping hand. How can I assist you today?",
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -23,11 +25,21 @@ export function Chatbot({ token, userId }: TChatBotProps) {
     null
   );
 
-  // useEffect(() => {
-  //   if (scrollRef.current) {
-  //     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  //   }
-  // }, [messages, loading]);
+  const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+
+    scrollTimeout.current = setTimeout(() => {
+      el.scrollTo({
+        top: el.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 30);
+  }, [messages, loading]);
 
   const openSocket = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) return;
@@ -148,8 +160,6 @@ export function Chatbot({ token, userId }: TChatBotProps) {
 
         return updated;
       });
-
-      scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
 
       if (index >= fullText.length) {
         clearInterval(interval);
