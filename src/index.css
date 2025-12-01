@@ -47,6 +47,11 @@
     border-radius: var(--cb-radius);
   }
 
+  .cb-send-button {
+     background-color: var(--cb-primary);
+    color: var(--cb-user-text);
+  }
+
   /* CONTAINER */
   .cb-container {
     background-color: var(--cb-secondary);

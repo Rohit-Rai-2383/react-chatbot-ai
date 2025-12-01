@@ -14,9 +14,10 @@ export default function ChatInput({ onSend }: TChatbotInputProps) {
 
   return (
     <div className="w-full bg-white border-t border-gray-200 px-4 py-3 space-y-3">
-      <div className="flex items-center bg-gray-100 rounded-full px-4 py-3 shadow-sm">
-        <input
-          className="flex-1 bg-transparent outline-none text-sm"
+      <div className="flex items-center bg-gray-100 rounded-lg px-4 py-3 shadow-sm">
+        <textarea
+          rows={3}
+          className="flex-1 bg-transparent outline-none text-sm resize-none overflow-hidden"
           placeholder="Type a message..."
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -29,7 +30,7 @@ export default function ChatInput({ onSend }: TChatbotInputProps) {
           className={`w-8 h-8 flex items-center justify-center rounded-full transition 
             ${
               value.trim()
-                ? "cb-user-bubble hover:cb-user-bubble"
+                ? "cb-send-button hover:cb-send-button"
                 : "bg-gray-300 cursor-not-allowed text-gray-500"
             }
           `}
