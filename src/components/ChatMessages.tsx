@@ -25,14 +25,7 @@ export default function ChatMessages({ messages }: { messages: TMessage[] }) {
                 isUser ? "justify-end" : "justify-start"
               }`}
             >
-              {!isUser && (
-                <div className="w-6 h-6">
-                  <img
-                    src="./FK-app-icon.png"
-                    className="w-full h-full rounded-full"
-                  />
-                </div>
-              )}
+              {!isUser && <div className="w-6 h-6">🤖</div>}
               <div className="max-w-[90%]">
                 {isProcessing && !isError ? (
                   <BotProcessing text={m.content} />
