@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
 
-export default function BotProcessing({ text }: { text: string }) {
+export default function BotProcessing({
+  text = "processing",
+}: {
+  text?: string;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 3 }}

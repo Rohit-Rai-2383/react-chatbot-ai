@@ -5,7 +5,7 @@ import ChatInput from "./components/ChatInput";
 import ChatMessages from "./components/ChatMessages";
 import { config } from "./config";
 
-export function Chatbot({ token, userId, theme }: TChatBotProps) {
+export function Chatbot({ token, userId }: TChatBotProps) {
   const TOKEN = token || "";
 
   const [open, setOpen] = useState(false);
@@ -23,11 +23,11 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     null
   );
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages, loading]);
+  // useEffect(() => {
+  //   if (scrollRef.current) {
+  //     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  //   }
+  // }, [messages, loading]);
 
   const openSocket = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) return;
@@ -56,6 +56,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
           ...m,
           { role: role.ERROR_ROLE, content: "Invalid server response." },
         ]);
+
         return;
       }
 
@@ -96,11 +97,6 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
         ]);
         return;
       }
-
-      setMessages((m) => [
-        ...m,
-        { role: role.ERROR_ROLE, content: "Unknown response format." },
-      ]);
     };
 
     ws.onerror = () => {
@@ -117,14 +113,14 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
   };
 
   const send = (text: string) => {
+    setMessages((m) => [...m, { role: role.USER_ROLE, content: text }]);
+    setLoading(true);
+
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
       console.log("WS NOT READY → connecting again...");
       openSocket();
       return;
     }
-
-    setMessages((m) => [...m, { role: role.USER_ROLE, content: text }]);
-    setLoading(true);
 
     wsRef.current.send(
       JSON.stringify({ type: responseType.QUERY, query: text })
@@ -166,7 +162,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
           return updated;
         });
       }
-    }, 12);
+    }, 6);
   };
 
   const startProcessingTimeout = () => {
@@ -187,7 +183,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
           },
         ];
       });
-    }, 9000);
+    }, 15000);
   };
 
   if (!token || !config.allowedUsers.includes(userId)) return null;
