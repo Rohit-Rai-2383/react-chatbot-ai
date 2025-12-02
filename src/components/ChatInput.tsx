@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowUp } from "lucide-react";
 import type { TChatbotInputProps } from "../../utils/types";
 
-export default function ChatInput({ onSend }: TChatbotInputProps) {
+export default function ChatInput({ onSend, isDisabled }: TChatbotInputProps) {
   const [value, setValue] = useState("");
 
   const send = () => {
@@ -26,12 +26,11 @@ export default function ChatInput({ onSend }: TChatbotInputProps) {
 
         <button
           onClick={send}
-          disabled={!value.trim()}
+          disabled={!value.trim() || isDisabled}
           className={`w-8 h-8 flex items-center justify-center rounded-full transition 
-            ${
-              value.trim()
-                ? "cb-send-button hover:cb-send-button"
-                : "bg-gray-300 cursor-not-allowed text-gray-500"
+            ${value.trim() && !isDisabled
+              ? "cb-send-button hover:cb-send-button"
+              : "bg-gray-300 cursor-not-allowed text-gray-500"
             }
           `}
         >

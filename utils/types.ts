@@ -13,6 +13,7 @@ export type TParsedRole = {
 
 export type TChatbotInputProps = {
   onSend: (text: string) => void;
+  isDisabled?: boolean;
 };
 
 export type TTheme = {

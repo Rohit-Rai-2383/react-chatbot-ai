@@ -18,6 +18,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     },
   ]);
   const [loading, setLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const hasSentAuth = useRef(false);
@@ -58,8 +59,6 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     };
 
     ws.onmessage = (event) => {
-      setLoading(false);
-
       let parsed: TParsedRole | null = null;
       try {
         parsed = JSON.parse(event.data);
@@ -141,6 +140,8 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
 
   const streamBotResponse = (fullText: string) => {
     let index = 0;
+    setIsStreaming(true);
+    setLoading(false);
 
     setMessages((prev) => [
       ...prev,
@@ -171,6 +172,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
           };
           return updated;
         });
+        setIsStreaming(false);
       }
     }, 6);
   };
@@ -223,7 +225,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
             <ChatMessages messages={messages} />
           </div>
 
-          <ChatInput onSend={send} />
+          <ChatInput onSend={send} isDisabled={loading || isStreaming} />
         </div>
       )}
     </>
