@@ -67,6 +67,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
           ...m,
           { role: role.ERROR_ROLE, content: "Invalid server response." },
         ]);
+        setLoading(false);
 
         return;
       }
@@ -118,9 +119,15 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
           content: "WebSocket error occurred.",
         },
       ]);
+      setLoading(false);
     };
 
-    ws.onclose = () => console.log("WS Closed");
+    ws.onclose = (e) => {
+      console.log("WS Closed", e);
+      setLoading(false);
+      setIsStreaming(false);
+      hasSentAuth.current = false;
+    };
   };
 
   const send = (text: string) => {
@@ -130,6 +137,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
       console.log("WS NOT READY → connecting again...");
       openSocket();
+      setLoading(false);
       return;
     }
 
