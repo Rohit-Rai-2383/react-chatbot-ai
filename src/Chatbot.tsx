@@ -17,6 +17,8 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
         "Hello! I am your helping hand. How can I assist you today?",
     },
   ]);
+  const [streamText, setStreamText] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -27,20 +29,6 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
   );
 
   const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-
-    scrollTimeout.current = setTimeout(() => {
-      el.scrollTo({
-        top: el.scrollHeight,
-        behavior: "smooth",
-      });
-    }, 30);
-  }, [messages, loading]);
 
   const openSocket = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) return;
@@ -151,35 +139,23 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     setIsStreaming(true);
     setLoading(false);
 
-    setMessages((prev) => [
-      ...prev,
-      { role: role.BOT_STREAM_ROLE, content: "" },
-    ]);
+    setStreamText("");
 
     const interval = setInterval(() => {
       index++;
+      setStreamText(fullText.slice(0, index));
 
-      setMessages((prev) => {
-        const updated = [...prev];
-        const lastMsg = updated[updated.length - 1];
-
-        if (lastMsg.role === role.BOT_STREAM_ROLE) {
-          lastMsg.content = fullText.slice(0, index);
-        }
-
-        return updated;
-      });
+      requestAnimationFrame(scrollToBottom);
 
       if (index >= fullText.length) {
         clearInterval(interval);
-        setMessages((prev) => {
-          const updated = [...prev];
-          updated[updated.length - 1] = {
-            role: role.BOT_ROLE,
-            content: fullText,
-          };
-          return updated;
-        });
+
+        setMessages((prev) => [
+          ...prev,
+          { role: role.BOT_ROLE, content: fullText },
+        ]);
+
+        setStreamText(null);
         setIsStreaming(false);
       }
     }, 6);
@@ -206,6 +182,36 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     }, 15000);
   };
 
+  const scrollToBottom = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    requestAnimationFrame(() => {
+      el.scrollTo({
+        top: el.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    return () => {
+      if (processingTimeoutRef.current) {
+        clearTimeout(processingTimeoutRef.current);
+        processingTimeoutRef.current = null;
+      }
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+        scrollTimeout.current = null;
+      }
+      setLoading(false);
+      setIsStreaming(false);
+    };
+  }, []);
+
   if (!token || !config.allowedUsers.includes(userId)) return null;
 
   return (
@@ -230,7 +236,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
             ref={scrollRef}
             className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50 space-y-6"
           >
-            <ChatMessages messages={messages} />
+            <ChatMessages messages={messages} streamText={streamText} />
           </div>
 
           <ChatInput onSend={send} isDisabled={loading || isStreaming} />
