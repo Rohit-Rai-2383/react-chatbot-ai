@@ -41,3 +41,11 @@ export type TChatBotProps = {
   userId: string;
   theme?: TTheme;
 };
+
+export type THistoryItem = {
+  answer: string;
+  question: string;
+  user_id: string | null;
+  id: number;
+  created_at: string;
+};
