@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { role, responseType } from "../utils/constants";
-import type { TChatBotProps, TMessage, TParsedRole } from "../utils/types";
+import type {
+  TChatBotProps,
+  THistoryItem,
+  TMessage,
+  TParsedRole,
+} from "../utils/types";
 import ChatInput from "./components/ChatInput";
 import ChatMessages from "./components/ChatMessages";
 import { config } from "./config";
@@ -28,6 +33,12 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     null
   );
 
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const shouldScrollToBottom = useRef(true);
+  const previousScrollHeightRef = useRef(0);
+
   const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const openSocket = () => {
@@ -47,6 +58,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     };
 
     ws.onmessage = (event) => {
+      shouldScrollToBottom.current = true;
       let parsed: TParsedRole | null = null;
       try {
         parsed = JSON.parse(event.data);
@@ -118,7 +130,62 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     };
   };
 
+  const fetchHistory = async () => {
+    if (isLoadingHistory || !hasMore) return;
+    setIsLoadingHistory(true);
+    shouldScrollToBottom.current = false;
+    if (scrollRef.current) {
+      previousScrollHeightRef.current = scrollRef.current.scrollHeight;
+    }
+
+    try {
+      const limit = 100;
+      const response = await fetch(
+        `${config.history_url}?user_id=${userId}&limit=${limit}&offset=${offset}`
+      );
+      const data = (await response.json()) as THistoryItem[];
+
+      if (Array.isArray(data)) {
+        if (data.length < limit) {
+          setHasMore(false);
+        }
+        const incomingMessages: TMessage[] = data.flatMap((item) => [
+          { role: role.USER_ROLE, content: item.question },
+          { role: role.BOT_ROLE, content: item.answer },
+        ]);
+
+        setMessages((prev) => [...incomingMessages, ...prev]);
+        setOffset((prev) => prev + limit);
+      }
+    } catch (error) {
+      console.error("Failed to fetch history:", error);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollTop } = scrollRef.current;
+    if (scrollTop === 0 && hasMore && !isLoadingHistory) {
+      fetchHistory();
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (
+      e.deltaY < 0 &&
+      scrollRef.current &&
+      scrollRef.current.scrollTop === 0 &&
+      hasMore &&
+      !isLoadingHistory
+    ) {
+      fetchHistory();
+    }
+  };
+
   const send = (text: string) => {
+    shouldScrollToBottom.current = true;
     setMessages((m) => [...m, { role: role.USER_ROLE, content: text }]);
     setLoading(true);
 
@@ -194,7 +261,17 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (shouldScrollToBottom.current) {
+      scrollToBottom();
+    } else {
+      if (scrollRef.current) {
+        const newScrollHeight = scrollRef.current.scrollHeight;
+        const diff = newScrollHeight - previousScrollHeightRef.current;
+        if (diff > 0) {
+          scrollRef.current.scrollTop = diff;
+        }
+      }
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -235,7 +312,14 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
           <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50 space-y-6"
+            onScroll={handleScroll}
+            onWheel={handleWheel}
           >
+            {isLoadingHistory && (
+              <div className="flex justify-center p-2">
+                <span className="text-gray-400 text-sm">Loading...</span>
+              </div>
+            )}
             <ChatMessages messages={messages} streamText={streamText} />
           </div>
 
