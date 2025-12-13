@@ -139,7 +139,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     }
 
     try {
-      const limit = 100;
+      const limit = 8;
       const response = await fetch(
         `${config.history_url}?user_id=${userId}&limit=${limit}&offset=${offset}`
       );
@@ -149,7 +149,9 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
         if (data.length < limit) {
           setHasMore(false);
         }
-        const incomingMessages: TMessage[] = data.flatMap((item) => [
+
+        const orderedData = [...data].reverse();
+        const incomingMessages: TMessage[] = orderedData.flatMap((item) => [
           { role: role.USER_ROLE, content: item.question },
           { role: role.BOT_ROLE, content: item.answer },
         ]);
