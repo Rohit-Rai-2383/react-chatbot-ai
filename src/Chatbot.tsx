@@ -192,7 +192,7 @@ export function Chatbot({ token, userId, theme }: TChatBotProps) {
     setLoading(true);
 
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-      console.log("WS NOT READY → connecting again...");
+      console.log("WS NOT READY -  connecting again...");
       openSocket();
       setLoading(false);
       return;
